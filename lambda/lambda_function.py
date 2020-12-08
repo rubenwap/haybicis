@@ -19,11 +19,7 @@ import requests
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-def get_bikes(station_id):
-    resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
-    # TODO: Remove hardcoded station and pass the argument. Have to find out how to set personal settings in Alexa
-    available_bikes = list(filter(lambda item: item["station_id"] == station_id, resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
-    return f"""Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."""
+
 
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
@@ -52,7 +48,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        bikes_available = get_bikes(244)
+        bikes_available = self.get_bikes(244)
         speak_output = bikes_available
 
         return (
@@ -61,6 +57,12 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 # .ask("add a reprompt if you want to keep the session open for the user to respond")
                 .response
         )
+
+    def get_bikes(self, station_id):
+        resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
+        # TODO: Remove hardcoded station and pass the argument. Have to find out how to set personal settings in Alexa
+        available_bikes = list(filter(lambda item: item["station_id"] == station_id, resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
+        return f"""Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."""
 
 
 class HelpIntentHandler(AbstractRequestHandler):
