@@ -23,7 +23,7 @@ def get_bikes(station_id):
     resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
     # TODO: Remove hardcoded station and pass the argument. Have to find out how to set personal settings in Alexa
     available_bikes = list(filter(lambda item: item["station_id"] == station_id, resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
-    return f"Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."
+    return f"""Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."""
 
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
