@@ -2,6 +2,7 @@ import logging
 import os
 import boto3
 from botocore.exceptions import ClientError
+import requests
 
 
 def create_presigned_url(object_name):
@@ -25,3 +26,5 @@ def create_presigned_url(object_name):
 
     # The response contains the presigned URL
     return response
+
+    
