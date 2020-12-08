@@ -14,9 +14,16 @@ from ask_sdk_core.handler_input import HandlerInput
 
 from ask_sdk_model import Response
 
+import requests
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+def get_bikes(station_id):
+    resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
+    # TODO: Remove hardcoded station and pass the argument. Have to find out how to set personal settings in Alexa
+    available_bikes = list(filter(lambda item: item["station_id"] == station_id, resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
+    return f"Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."
 
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
@@ -27,7 +34,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Welcome, you can say Hello or Help. Which would you like to try?"
+        speak_output = "Hola, Hay Bicis activado. Puedes preguntarme si hay bicis disponibles."
 
         return (
             handler_input.response_builder
@@ -38,14 +45,15 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 
 class HayBicisIntentHandler(AbstractRequestHandler):
-    """Handler for Hello World Intent."""
+    """Handler for HayBicis Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("HayBicis")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "hay bicis activado"
+        bikes_available = get_bikes(244)
+        speak_output = bikes_available
 
         return (
             handler_input.response_builder
@@ -63,7 +71,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "You can say hello to me! How can I help?"
+        speak_output = "Qué necesitas?"
 
         return (
             handler_input.response_builder
@@ -82,7 +90,7 @@ class CancelOrStopIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Goodbye!"
+        speak_output = "Adios!"
 
         return (
             handler_input.response_builder
@@ -118,7 +126,7 @@ class IntentReflectorHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         intent_name = ask_utils.get_intent_name(handler_input)
-        speak_output = "You just triggered " + intent_name + "."
+        speak_output = "Acabas de lanzar " + intent_name + "."
 
         return (
             handler_input.response_builder
@@ -141,7 +149,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         # type: (HandlerInput, Exception) -> Response
         logger.error(exception, exc_info=True)
 
-        speak_output = "Sorry, I had trouble doing what you asked. Please try again."
+        speak_output = "Perdona pero no te acabo de entender"
 
         return (
             handler_input.response_builder
