@@ -31,6 +31,7 @@ LOCATION_FAILURE = 'Hubo un fallo con la API de direcciones.'
 GOODBYE = 'Adios! Gracias por usar Hay Bicis'
 HELP = 'Puedes usar este skill preguntando: Hay bicis disponibles?'
 AVAILABLE_BIKES = 'En la estación de {} hay {} bicis mecánicas y {} eléctricas.'
+OUTSIDE_BARCELONA = 'Tu dirección parece estar fuera de Barcelona. Hay bicis solo funciona dentro de Barcelona'
 
 # =========================================================================================================================================
 
@@ -73,6 +74,9 @@ class HayBicisIntentHandler(AbstractRequestHandler):
 
             if addr.address_line1 is None and addr.state_or_region is None:
                 response_builder.speak(NO_ADDRESS)
+            else if:
+                addr.city.lower() is not "barcelona":
+                    reponse_builder.speak(OUTSIDE_BARCELONA)
             else:
                 
                 geolocator = Nominatim(user_agent="hay-bicis")
