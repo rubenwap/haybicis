@@ -75,7 +75,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 response_builder.speak(NO_ADDRESS)
             else:
                 
-                # geolocator = Nominatim()
+                geolocator = Nominatim()
                 # address = "{}, Barcelona, {}".format(addr.address_line1.encode("utf-8"), addr.postal_code.encode("utf-8"))
                 # coordinates = geolocator.geocode(address)
                 # logger.info(coordinates.latitude, coordinates.longitude)
