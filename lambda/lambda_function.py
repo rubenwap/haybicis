@@ -80,10 +80,10 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 logger.info(address)
                 coordinates = geolocator.geocode(address)
                 
-                closest = self.get_closest_distance(coordinates.latitude, coordinates.longitude)
+                # closest = self.get_closest_distance(coordinates.latitude, coordinates.longitude)
                 
-                bikes_available = self.get_bikes(closest["station_id"])
-                speak_output = bikes_available
+                # bikes_available = self.get_bikes(closest["station_id"])
+                # speak_output = bikes_available
             return (
             handler_input.response_builder
                 .speak("Test")
