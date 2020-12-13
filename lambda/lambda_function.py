@@ -33,6 +33,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+        logger.info(context.System.device.supportedInterfaces.Geolocation)
         speak_output = "Hola, Hay Bicis activado. Puedes preguntarme si hay bicis disponibles."
 
         return (
