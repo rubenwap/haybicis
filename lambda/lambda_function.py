@@ -48,7 +48,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        logger.info("In GetAddressIntentHandler")
+        logger.info("In HayBicisIntentHandler")
 
         service_client_fact = handler_input.service_client_factory
         response_builder = handler_input.response_builder
