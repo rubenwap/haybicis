@@ -17,8 +17,8 @@ from ask_sdk_model import Response
 from ask_sdk_model.services import ServiceException
 from ask_sdk_model.ui import AskForPermissionsConsentCard
 
-import requests
-from geopy.geocoders import Nominatim
+# import requests
+# from geopy.geocoders import Nominatim
 
 
 # =========================================================================================================================================
@@ -182,8 +182,8 @@ sb.add_request_handler(SessionEndedRequestHandler())
 sb.add_exception_handler(HayBicisErrorHandler())
 
 # TODO: Uncomment the following lines of code for request, response logs.
-# sb.add_global_request_interceptor(RequestLogger())
-# sb.add_global_response_interceptor(ResponseLogger())
+sb.add_global_request_interceptor(RequestLogger())
+sb.add_global_response_interceptor(ResponseLogger())
 
 # Handler name that is used on AWS lambda
 lambda_handler = sb.lambda_handler()
