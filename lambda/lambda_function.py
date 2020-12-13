@@ -85,11 +85,11 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 
                 bikes_available = self.get_bikes(closest["station_id"])
                 speak_output = bikes_available
-                return (
-                handler_input.response_builder
-                    .speak(speak_output)
-                    .response
-                    )
+            return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .response
+                )
 
         except ServiceException as e:
             logger.error("error reported by device location service")
