@@ -17,8 +17,8 @@ from ask_sdk_model import Response
 from ask_sdk_model.services import ServiceException
 from ask_sdk_model.ui import AskForPermissionsConsentCard
 
-# import requests
-# from geopy.geocoders import Nominatim
+import requests
+from geopy.geocoders import Nominatim
 
 
 # =========================================================================================================================================
@@ -87,7 +87,22 @@ class HayBicisIntentHandler(AbstractRequestHandler):
         except Exception as e:
             logger.error(e, exc_info=True)
             return handler_input.response_builder.speak(ERROR)
-    
+            
+    def get_coordinates(self, location):
+        geolocator = Nominatim()    # Set provider of geo-data 
+        address = "{}, {}".format(location["addressLine1"].encode("utf-8"),
+                                  location["city"].encode("utf-8"))
+        coordinates = geolocator.geocode(address)
+        print(address)
+        return (coordinates.latitude, coordinates.longitude)
+        
+    # def get_bikes(self, station_id):
+    #     resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
+    #     # station information: https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information
+    #     # TODO: Remove hardcoded station and pass the argument. Have to find out how to set personal settings in Alexa
+    #     available_bikes = list(filter(lambda item: item["station_id"] == station_id, resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
+    #     return f"""Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."""
+
 class HayBicisErrorHandler(AbstractExceptionHandler):
     """Catch getAddress error handler, log exception and
     respond with custom message.
@@ -164,13 +179,11 @@ class RequestLogger(AbstractRequestInterceptor):
         logger.debug("Alexa Request: {}".format(
             handler_input.request_envelope.request))
 
-
 class ResponseLogger(AbstractResponseInterceptor):
     """Log the alexa responses."""
     def process(self, handler_input, response):
         # type: (HandlerInput, Response) -> None
         logger.debug("Alexa Response: {}".format(response))
-
 
 # Register intent handlers
 sb.add_request_handler(HayBicisIntentHandler())
