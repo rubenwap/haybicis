@@ -24,6 +24,15 @@ import requests
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+PERMISSIONS = ['read::alexa:device:all:address']
+NOTIFY_MISSING_PERMISSIONS = 'Por favor, activa el permiso de localización en la app de Alexa.'
+ACTIVATED = "Hola, Hay Bicis activado. Puedes preguntarme si hay bicis disponibles."
+BIKES_AVAILABLE = "Hay {mechanical} bicis mecánicas y {ebike} eléctricas."""
+HELP_REQUEST = "Qué necesitas?"
+BYE = "Adios!"
+GENERIC_EXCEPTION = "Perdona pero no te acabo de entender"
+REFLECTOR = "Acabas de lanzar {}"
+
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
     def can_handle(self, handler_input):
@@ -33,7 +42,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Hola, Hay Bicis activado. Puedes preguntarme si hay bicis disponibles."
+        speak_output = ACTIVATED
 
         return (
             handler_input.response_builder
@@ -55,11 +64,19 @@ class HayBicisIntentHandler(AbstractRequestHandler):
 
         # type: (HandlerInput) -> Response
 
-        # service_client_fact = handler_input.service_client_factory
-        # device_id = get_device_id(handler_input)
-        # device_addr_client = service_client_fact.get_device_address_service()
-        # addr = device_addr_client.get_full_address(device_id)
-        # logger.info(addr)
+        if not (get_api_access_token(handler_input)):
+            logger.info("no api access token")
+            response_builder.speak(NOTIFY_MISSING_PERMISSIONS)
+            response_builder.set_card(
+                AskForPermissionsConsentCard(permissions=PERMISSIONS))
+            return response_builder.response
+
+
+        service_client_fact = handler_input.service_client_factory
+        device_id = get_device_id(handler_input)
+        device_addr_client = service_client_fact.get_device_address_service()
+        addr = device_addr_client.get_full_address(device_id)
+        logger.info(addr)
         bikes_available = self.get_bikes(244)
         speak_output = bikes_available
 
@@ -79,7 +96,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
         # station information: https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information
         # TODO: Remove hardcoded station and pass the argument. Have to find out how to set personal settings in Alexa
         available_bikes = list(filter(lambda item: item["station_id"] == station_id, resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
-        return f"""Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."""
+        return BIKES_AVAILABLE.format(mechanical=available_bikes["mechanical"], ebike=available_bikes["ebike"])
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -90,7 +107,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Qué necesitas?"
+        speak_output = HELP_REQUEST
 
         return (
             handler_input.response_builder
@@ -109,7 +126,7 @@ class CancelOrStopIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Adios!"
+        speak_output = BYE
 
         return (
             handler_input.response_builder
@@ -145,7 +162,7 @@ class IntentReflectorHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         intent_name = ask_utils.get_intent_name(handler_input)
-        speak_output = "Acabas de lanzar " + intent_name + "."
+        speak_output = REFLECTOR.format(intent_name)
 
         return (
             handler_input.response_builder
@@ -168,7 +185,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         # type: (HandlerInput, Exception) -> Response
         logger.error(exception, exc_info=True)
 
-        speak_output = "Perdona pero no te acabo de entender"
+        speak_output = GENERIC_EXCEPTION
 
         return (
             handler_input.response_builder
