@@ -28,30 +28,11 @@ sb = CustomSkillBuilder(api_client=DefaultApiClient())
 
 PERMISSIONS = ['read::alexa:device:all:address']
 NOTIFY_MISSING_PERMISSIONS = 'Por favor, activa el permiso de localización en la app de Alexa.'
-ACTIVATED = "Hola, Hay Bicis activado. Puedes preguntarme si hay bicis disponibles."
 BIKES_AVAILABLE = "Hay {mechanical} bicis mecánicas y {ebike} eléctricas."""
 HELP_REQUEST = "Qué necesitas?"
 BYE = "Adios!"
 GENERIC_EXCEPTION = "Perdona pero no te acabo de entender"
 REFLECTOR = "Acabas de lanzar {}"
-
-class LaunchRequestHandler(AbstractRequestHandler):
-    """Handler for Skill Launch."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-
-        return ask_utils.is_request_type("LaunchRequest")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speak_output = ACTIVATED
-
-        return (
-            handler_input.response_builder
-                .speak(speak_output)
-                .ask(speak_output)
-                .response
-        )
 
 
 # https://github.com/alexa/alexa-cookbook/blob/master/feature-demos/skill-demo-device-location/lambda/py/lambda_function.py
@@ -60,12 +41,14 @@ class HayBicisIntentHandler(AbstractRequestHandler):
     """Handler for HayBicis Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return ask_utils.is_intent_name("HayBicis")(handler_input)
+        
+        return (is_request_type("LaunchRequest")(handler_input)
+                or (is_intent_name("HayBicis")(handler_input)))
 
     def handle(self, handler_input):
 
         # type: (HandlerInput) -> Response
-
+        logger.info("In HayBicisIntentHandler")
         service_client_fact = handler_input.service_client_factory
         response_builder = handler_input.response_builder
 
@@ -86,8 +69,11 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             if addr.address_line1 is None and addr.state_or_region is None:
                 response_builder.speak(NO_ADDRESS)
             else:
+                bikes_available = self.get_bikes(244)
+                speak_output = bikes_available
+                
                 response_builder.speak(ADDRESS_AVAILABLE.format(
-                    addr.address_line1, addr.state_or_region, addr.postal_code))
+                    addr.address_line1, addr.state_or_region, addr.postal_code) + speak_output)
             return response_builder.response
         except ServiceException as e:
             logger.error("error reported by device location service")
@@ -95,16 +81,6 @@ class HayBicisIntentHandler(AbstractRequestHandler):
         except Exception as e:
             logger.error(e, exc_info=True)
             return handler_input.response_builder.speak(ERROR)
-
-        bikes_available = self.get_bikes(244)
-        speak_output = bikes_available
-
-        return (
-            handler_input.response_builder
-                .speak(speak_output)
-                # .ask("add a reprompt if you want to keep the session open for the user to respond")
-                .response
-        )
 
 
     # def get_closest_bicing_id():
