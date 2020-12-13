@@ -75,7 +75,10 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 response_builder.speak(NO_ADDRESS)
             else:
                 
-                
+                geolocator = Nominatim()
+                address = "{}, Barcelona, {}".format(addr.address_line1.encode("utf-8"), addr.postal_code.encode("utf-8"))
+                coordinates = geolocator.geocode(address)
+                logger.info(coordinates.latitude, coordinates.longitude)
                 
                 
                 response_builder.speak(ADDRESS_AVAILABLE.format(
@@ -88,13 +91,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             logger.error(e, exc_info=True)
             return handler_input.response_builder.speak(ERROR)
             
-    def get_coordinates(self, location):
-        geolocator = Nominatim()    # Set provider of geo-data 
-        address = "{}, {}".format(location["addressLine1"].encode("utf-8"),
-                                  location["city"].encode("utf-8"))
-        coordinates = geolocator.geocode(address)
-        print(address)
-        return (coordinates.latitude, coordinates.longitude)
+   
         
     # def get_bikes(self, station_id):
     #     resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
