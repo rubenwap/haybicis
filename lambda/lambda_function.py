@@ -71,8 +71,8 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             logger.info(addr)
             logger.info('Location API response retrieved, now building response')
 
-            if (addr.address_line1 is None and addr.state_or_region is None) or (addr.city.lower() is not "barcelona"):
-                response_builder.speak(NO_ADDRESS)
+            if (addr.address_line1 is None and addr.state_or_region is None) or (!addr.postal_code.startwith("08")):
+                response_builder.speak(NO_ADDRESS).response
             else:
                 
                 geolocator = Nominatim(user_agent="hay-bicis")
