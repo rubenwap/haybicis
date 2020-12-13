@@ -55,11 +55,11 @@ class HayBicisIntentHandler(AbstractRequestHandler):
 
         # type: (HandlerInput) -> Response
 
-        service_client_fact = handler_input.service_client_factory
-        device_id = get_device_id(handler_input)
-        device_addr_client = service_client_fact.get_device_address_service()
-        addr = device_addr_client.get_full_address(device_id)
-        logger.info(addr)
+        # service_client_fact = handler_input.service_client_factory
+        # device_id = get_device_id(handler_input)
+        # device_addr_client = service_client_fact.get_device_address_service()
+        # addr = device_addr_client.get_full_address(device_id)
+        # logger.info(addr)
         bikes_available = self.get_bikes(244)
         speak_output = bikes_available
 
