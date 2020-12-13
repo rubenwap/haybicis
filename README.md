@@ -1,4 +1,6 @@
-# HAY BICIS? 
+# hay bicis? 
+
+![hay bicis icon](./icons/icon_108_A2Z.png "Hay Bicis?")
 
 Alexa Skill to find out available Bicing bikes in your favorite station in Barcelona. 
 

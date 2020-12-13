@@ -3,3 +3,4 @@ ask-resources.json
 .vscode
 lambda/node_modules
 venv
+.DS_Store
