@@ -23,6 +23,8 @@ import requests
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+sb = CustomSkillBuilder(api_client=DefaultApiClient())
+
 
 PERMISSIONS = ['read::alexa:device:all:address']
 NOTIFY_MISSING_PERMISSIONS = 'Por favor, activa el permiso de localización en la app de Alexa.'
@@ -64,6 +66,9 @@ class HayBicisIntentHandler(AbstractRequestHandler):
 
         # type: (HandlerInput) -> Response
 
+        service_client_fact = handler_input.service_client_factory
+        response_builder = handler_input.response_builder
+
         if not (get_api_access_token(handler_input)):
             logger.info("no api access token")
             response_builder.speak(NOTIFY_MISSING_PERMISSIONS)
@@ -71,12 +76,26 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 AskForPermissionsConsentCard(permissions=PERMISSIONS))
             return response_builder.response
 
+        try:
+            device_id = get_device_id(handler_input)
+            device_addr_client = service_client_fact.get_device_address_service()
+            addr = device_addr_client.get_full_address(device_id)
 
-        service_client_fact = handler_input.service_client_factory
-        device_id = get_device_id(handler_input)
-        device_addr_client = service_client_fact.get_device_address_service()
-        addr = device_addr_client.get_full_address(device_id)
-        logger.info(addr)
+            logger.info('Location API response retrieved, now building response')
+            logger.info(addr)
+            if addr.address_line1 is None and addr.state_or_region is None:
+                response_builder.speak(NO_ADDRESS)
+            else:
+                response_builder.speak(ADDRESS_AVAILABLE.format(
+                    addr.address_line1, addr.state_or_region, addr.postal_code))
+            return response_builder.response
+        except ServiceException as e:
+            logger.error("error reported by device location service")
+            raise e
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return handler_input.response_builder.speak(ERROR)
+
         bikes_available = self.get_bikes(244)
         speak_output = bikes_available
 
@@ -198,8 +217,6 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 # payloads to the handlers above. Make sure any new handlers or interceptors you've
 # defined are included below. The order matters - they're processed top to bottom.
 
-
-sb = SkillBuilder()
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(HayBicisIntentHandler())
