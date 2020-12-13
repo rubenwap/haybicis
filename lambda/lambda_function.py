@@ -83,10 +83,10 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 closest = self.get_closest_distance(coordinates.latitude, coordinates.longitude)
                 
                 bikes_available = self.get_bikes(closest)
-                speak_output = bikes_available
+            
             return (
             handler_input.response_builder
-                .speak("Test")
+                .speak(bikes_available)
                 .response
                 )
 
