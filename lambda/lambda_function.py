@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # Built-in Intent Handlers
-class GetAddressIntentHandler(AbstractRequestHandler):
+class HayBicisIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -78,7 +78,7 @@ class GetAddressIntentHandler(AbstractRequestHandler):
             logger.error(e, exc_info=True)
             return handler_input.response_builder.speak(ERROR)
     
-class GetAddressErrorHandler(AbstractExceptionHandler):
+class HayBicisErrorHandler(AbstractExceptionHandler):
     """Catch getAddress error handler, log exception and
     respond with custom message.
     """
@@ -163,13 +163,13 @@ class ResponseLogger(AbstractResponseInterceptor):
 
 
 # Register intent handlers
-sb.add_request_handler(GetAddressIntentHandler())
+sb.add_request_handler(HayBicisIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
 
 # Register exception handlers
-sb.add_exception_handler(GetAddressErrorHandler())
+sb.add_exception_handler(HayBicisErrorHandler())
 
 # TODO: Uncomment the following lines of code for request, response logs.
 # sb.add_global_request_interceptor(RequestLogger())
