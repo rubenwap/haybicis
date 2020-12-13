@@ -83,8 +83,8 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 
                 closest = self.get_closest_distance(coordinates.latitude, coordinates.longitude)
                 
-                # bikes_available = self.get_bikes(closest["station_id"])
-                # speak_output = bikes_available
+                bikes_available = self.get_bikes(closest["station_id"])
+                speak_output = bikes_available
             return (
             handler_input.response_builder
                 .speak("Test")
@@ -100,7 +100,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
            
           
     def get_closest_distance(self, lat, lon):
-        stations = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information")
+        stations = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information").json()
         stations_w_distance = [{**item, **{'distance_to_user': geopy.distance.distance((lat, lon), (item["lat"], item["lon"]))}}  for item in stations["data"]["stations"]]
         return sorted(stations_w_distance, key=lambda k: k['distance_to_user'])[0]
         
