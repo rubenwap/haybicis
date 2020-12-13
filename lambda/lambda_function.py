@@ -25,7 +25,7 @@ import geopy.distance
 # =========================================================================================================================================
 WELCOME = 'Bienvenido a Hay Bicis. Si vives en Barcelona puedes preguntar si hay bicis disponibles en el bicing mas cercano a tu domicilio.'
 NOTIFY_MISSING_PERMISSIONS = 'Por favor activa el permiso de ubicación en la sección mis skills de la app de Alexa en tu móvil.'
-NO_ADDRESS = 'Parece que no tienes ninguna dirección configurada. Puedes añadir una desde la app de Alexa en tu móvil.'
+NO_ADDRESS = 'Parece que no tienes ninguna dirección configurada en Barcelona. Puedes añadir una desde la app de Alexa en tu móvil.'
 ERROR = 'Hubo un error al ejecutar el skill. Por favor mira los logs.'
 LOCATION_FAILURE = 'Hubo un fallo con la API de direcciones.'
 GOODBYE = 'Adios! Gracias por usar Hay Bicis'
@@ -71,7 +71,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             logger.info(addr)
             logger.info('Location API response retrieved, now building response')
 
-            if addr.address_line1 is None and addr.state_or_region is None:
+            if (addr.address_line1 is None and addr.state_or_region is None) or (addr.city.lower() is not "barcelona"):
                 response_builder.speak(NO_ADDRESS)
             else:
                 
