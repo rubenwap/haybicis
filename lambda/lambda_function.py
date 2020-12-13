@@ -76,7 +76,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             else:
                 
                 geolocator = Nominatim(user_agent="hay-bicis")
-                address = "{}, Barcelona, {}".format(addr.address_line1, addr.postal_code)
+                address = "{}, Son Simonet, {}".format(addr.address_line1, addr.postal_code)
                 logger.info(address)
                 coordinates = geolocator.geocode(address)
                 
