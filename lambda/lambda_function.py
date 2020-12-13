@@ -85,12 +85,11 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 
                 bikes_available = self.get_bikes(closest["station_id"])
                 speak_output = bikes_available
-            return (
-            handler_input.response_builder
-                .speak(speak_output)
-                # .ask("add a reprompt if you want to keep the session open for the user to respond")
-                .response
-        )
+                return (
+                handler_input.response_builder
+                    .speak(speak_output)
+                    .response
+                    )
 
         except ServiceException as e:
             logger.error("error reported by device location service")
@@ -100,7 +99,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             return handler_input.response_builder.speak(ERROR)
            
           
-    def get_closest_distance(self, lat, lon):
+    def get_closest_distance(lat, lon):
         stations = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information")
         stations_w_distance = [{**item, **{'distance_to_user': geopy.distance.distance((lat, lon), (item["lat"], item["lon"]))}}  for item in stations["data"]["stations"]]
         return sorted(stations_w_distance, key=lambda k: k['distance_to_user'])[0]
