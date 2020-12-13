@@ -79,11 +79,11 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 address = "{}, Barcelona, {}".format(addr.address_line1, addr.postal_code)
                 logger.info(address)
                 coordinates = geolocator.geocode(address)
-                logger.info(coordinates.latitude, coordinates.longitude)
+                logger.info((coordinates.latitude, coordinates.longitude))
                 
-                response_builder.speak(coordinates.latitude)
-                # response_builder.speak(ADDRESS_AVAILABLE.format(
-                #     addr.address_line1, addr.postal_code))
+                
+                response_builder.speak(ADDRESS_AVAILABLE.format(
+                    addr.address_line1, addr.postal_code))
             return response_builder.response
         except ServiceException as e:
             logger.error("error reported by device location service")
