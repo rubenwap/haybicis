@@ -8,7 +8,6 @@
 import logging
 import ask_sdk_core.utils as ask_utils
 
-from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.skill_builder import CustomSkillBuilder
 from ask_sdk_core.api_client import DefaultApiClient
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
@@ -251,12 +250,7 @@ class ResponseLogger(AbstractResponseInterceptor):
 
 
 
-# The SkillBuilder object acts as the entry point for your skill, routing all request and response
-# payloads to the handlers above. Make sure any new handlers or interceptors you've
-# defined are included below. The order matters - they're processed top to bottom.
-
-
-sb = SkillBuilder()
+sb = CustomSkillBuilder(api_client=DefaultApiClient())
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(HayBicisIntentHandler())
@@ -276,116 +270,3 @@ sb.add_exception_handler(CatchAllExceptionHandler())
 lambda_handler = sb.lambda_handler()
 
 
-# # -*- coding: utf-8 -*-
-
-# # This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK for Python.
-# # Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
-# # session persistence, api calls, and more.
-# # This sample is built using the handler classes approach in skill builder.
-# import logging
-# import ask_sdk_core.utils as ask_utils
-
-# from ask_sdk_core.skill_builder import SkillBuilder
-# from ask_sdk_core.skill_builder import CustomSkillBuilder
-# from ask_sdk_core.api_client import DefaultApiClient
-# from ask_sdk_core.dispatch_components import AbstractRequestHandler
-# from ask_sdk_core.dispatch_components import AbstractExceptionHandler
-# from ask_sdk_core.handler_input import HandlerInput
-# from ask_sdk_core.utils import (
-#     is_request_type, is_intent_name,
-#     get_api_access_token, get_device_id)
-
-# from ask_sdk_model import Response
-
-# import requests
-
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-# sb = CustomSkillBuilder(api_client=DefaultApiClient())
-
-
-
-
-
-# # https://github.com/alexa/alexa-cookbook/blob/master/feature-demos/skill-demo-device-location/lambda/py/lambda_function.py
-
-# class LaunchRequestHandler(AbstractRequestHandler):
-#     """Handler for Skill Launch."""
-#     def can_handle(self, handler_input):
-#         # type: (HandlerInput) -> bool
-
-#         return ask_utils.is_request_type("LaunchRequest")(handler_input)
-
-#     def handle(self, handler_input):
-#         # type: (HandlerInput) -> Response
-#         speak_output = "Hola, Hay Bicis activado. Puedes preguntarme si hay bicis disponibles."
-
-#         return (
-#             handler_input.response_builder
-#                 .speak(speak_output)
-#                 .ask(speak_output)
-#                 .response
-#         )
-
-
-
-
-
-
-# class HelpIntentHandler(AbstractRequestHandler):
-#     """Handler for Help Intent."""
-#     def can_handle(self, handler_input):
-#         # type: (HandlerInput) -> bool
-#         return is_intent_name("AMAZON.HelpIntent")(handler_input)
-
-#     def handle(self, handler_input):
-#         # type: (HandlerInput) -> Response
-#         logger.info("In HelpIntentHandler")
-
-#         handler_input.response_builder.speak(HELP).ask(HELP)
-#         return handler_input.response_builder.response
-
-# class CancelOrStopIntentHandler(AbstractRequestHandler):
-#     """Single handler for Cancel and Stop Intent."""
-#     def can_handle(self, handler_input):
-#         # type: (HandlerInput) -> bool
-#         return (is_intent_name("AMAZON.CancelIntent")(handler_input) or
-#                 is_intent_name("AMAZON.StopIntent")(handler_input))
-
-#     def handle(self, handler_input):
-#         # type: (HandlerInput) -> Response
-#         logger.info("In CancelOrStopIntentHandler")
-
-#         handler_input.response_builder.speak(GOODBYE)
-#         return handler_input.response_builder.response
-
-# class SessionEndedRequestHandler(AbstractRequestHandler):
-#     """Handler for Session End."""
-#     def can_handle(self, handler_input):
-#         # type: (HandlerInput) -> bool
-#         return is_request_type("SessionEndedRequest")(handler_input)
-
-#     def handle(self, handler_input):
-#         # type: (HandlerInput) -> Response
-#         logger.info("In SessionEndedRequestHandler")
-
-#         logger.info("Session ended reason: {}".format(
-#             handler_input.request_envelope.request.reason))
-#         return handler_input.response_builder.response
-
-# # Register intent handlers
-# sb.add_request_handler(LaunchRequestHandler())
-# sb.add_request_handler(HayBicisIntentHandler())
-# sb.add_request_handler(HelpIntentHandler())
-# sb.add_request_handler(CancelOrStopIntentHandler())
-# sb.add_request_handler(SessionEndedRequestHandler())
-
-# # Register exception handlers
-# sb.add_exception_handler(HayBicisErrorHandler())
-
-# # TODO: Uncomment the following lines of code for request, response logs.
-# # sb.add_global_request_interceptor(RequestLogger())
-# # sb.add_global_response_interceptor(ResponseLogger())
-
-# # Handler name that is used on AWS lambda
-# lambda_handler = sb.lambda_handler()
