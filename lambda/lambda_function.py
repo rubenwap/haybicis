@@ -89,7 +89,7 @@ class HayBicisErrorHandler(AbstractExceptionHandler):
 
     def handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> Response
-        logger.info("In GetAddressErrorHandler")
+        logger.info("In HayBicisErrorHandler")
         logger.error(exception , exc_info=True)
 
         if (exception.status_code==403):
