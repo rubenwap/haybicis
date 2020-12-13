@@ -17,6 +17,10 @@ from ask_sdk_model import Response
 from ask_sdk_model.services import ServiceException
 from ask_sdk_model.ui import AskForPermissionsConsentCard
 
+import requests
+from geopy.geocoders import Nominatim
+
+
 # =========================================================================================================================================
 WELCOME = 'Welcome to the Sample Device Address API Skill!  You can ask for the device address by saying what is my address.  What do you want to ask?'
 WHAT_DO_YOU_WANT = 'What do you want to ask?'
@@ -64,12 +68,16 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             device_id = get_device_id(handler_input)
             device_addr_client = service_client_fact.get_device_address_service()
             addr = device_addr_client.get_full_address(device_id)
-
+            
             logger.info('Location API response retrieved, now building response')
 
             if addr.address_line1 is None and addr.state_or_region is None:
                 response_builder.speak(NO_ADDRESS)
             else:
+                
+                
+                
+                
                 response_builder.speak(ADDRESS_AVAILABLE.format(
                     addr.address_line1, addr.state_or_region, addr.postal_code))
             return response_builder.response
