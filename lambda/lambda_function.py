@@ -68,6 +68,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             if addr.address_line1 is None and addr.state_or_region is None:
                 response_builder.speak(NO_ADDRESS)
             else:
+                logger.info(addr)
                 response_builder.speak(ADDRESS_AVAILABLE.format(
                     addr.address_line1, addr.state_or_region, addr.postal_code))
             return response_builder.response
