@@ -99,7 +99,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             return handler_input.response_builder.speak(ERROR)
            
           
-    def get_closest_distance(lat, lon):
+    def get_closest_distance(self, lat, lon):
         stations = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information")
         stations_w_distance = [{**item, **{'distance_to_user': geopy.distance.distance((lat, lon), (item["lat"], item["lon"]))}}  for item in stations["data"]["stations"]]
         return sorted(stations_w_distance, key=lambda k: k['distance_to_user'])[0]
