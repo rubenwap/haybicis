@@ -23,15 +23,14 @@ import geopy.distance
 
 
 # =========================================================================================================================================
-WELCOME = 'Welcome to the Sample Device Address API Skill!  You can ask for the device address by saying what is my address.  What do you want to ask?'
-WHAT_DO_YOU_WANT = 'What do you want to ask?'
-NOTIFY_MISSING_PERMISSIONS = 'Please enable Location permissions in the Amazon Alexa app.'
-NO_ADDRESS = 'It looks like you don\'t have an address set. You can set your address from the companion app.'
-ADDRESS_AVAILABLE = 'Here is your full address: {}, {}'
-ERROR = 'There was an error with the skill. Please check the logs.'
-LOCATION_FAILURE = 'There was an error with the Device Address API.'
-GOODBYE = 'Bye! Thanks for using the Sample Device Address API Skill!'
-HELP = 'You can use this skill by asking something like: whats my address?'
+WELCOME = 'Bienvenido a Hay Bicis. Si vives en Barcelona puedes preguntar si hay bicis disponibles en el bicing mas cercano a tu domicilio.'
+NOTIFY_MISSING_PERMISSIONS = 'Por favor activa el permiso de ubicación en la sección mis skills de la app de Alexa en tu móvil.'
+NO_ADDRESS = 'Parece que no tienes ninguna dirección configurada. Puedes añadir una desde la app de Alexa en tu móvil.'
+ERROR = 'Hubo un error al ejecutar el skill. Por favor mira los logs.'
+LOCATION_FAILURE = 'Hubo un fallo con la API de direcciones.'
+GOODBYE = 'Adios! Gracias por usar Hay Bicis'
+HELP = 'Puedes usar este skill preguntando: Hay bicis disponibles?'
+AVAILABLE_BIKES = 'En la estación de {} hay {} bicis mecánicas y {} eléctricas.'
 
 # =========================================================================================================================================
 
@@ -108,8 +107,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
     def get_bikes(self, station):
         resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
         available_bikes = list(filter(lambda item: item["station_id"] == station["station_id"], resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
-        return f"""En la estación de {station["address"]} hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."""
-
+        return AVAILABLE_BIKES.format(station["address"], available_bikes["mechanical"], available_bikes["ebike"])
 
 
 class HayBicisErrorHandler(AbstractExceptionHandler):
@@ -194,18 +192,16 @@ class ResponseLogger(AbstractResponseInterceptor):
         # type: (HandlerInput, Response) -> None
         logger.debug("Alexa Response: {}".format(response))
 
+
 # Register intent handlers
 sb.add_request_handler(HayBicisIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
 
-# Register exception handlers
 sb.add_exception_handler(HayBicisErrorHandler())
 
-# TODO: Uncomment the following lines of code for request, response logs.
 sb.add_global_request_interceptor(RequestLogger())
 sb.add_global_response_interceptor(ResponseLogger())
 
-# Handler name that is used on AWS lambda
 lambda_handler = sb.lambda_handler()
