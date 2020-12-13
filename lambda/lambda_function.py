@@ -74,7 +74,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
 
             if addr.address_line1 is None and addr.state_or_region is None:
                 response_builder.speak(NO_ADDRESS)
-            else if:
+            elif:
                 addr.city.lower() is not "barcelona":
                     reponse_builder.speak(OUTSIDE_BARCELONA)
             else:
