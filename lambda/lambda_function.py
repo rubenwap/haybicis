@@ -29,9 +29,8 @@ NO_ADDRESS = 'Parece que no tienes ninguna dirección configurada. Puedes añadi
 ERROR = 'Hubo un error al ejecutar el skill. Por favor mira los logs.'
 LOCATION_FAILURE = 'Hubo un fallo con la API de direcciones.'
 GOODBYE = 'Adios! Gracias por usar Hay Bicis'
-HELP = 'Puedes usar este skill preguntando: Hay bicis disponibles?'
+HELP = 'Puedes usar este skill pidiendo a Alexa que le pregunte a la estación de bicing si hay bicis. O más brevemente, pide que mire la estación de bicing.'
 AVAILABLE_BIKES = 'En la estación de {} hay {} bicis mecánicas y {} eléctricas.'
-OUTSIDE_BARCELONA = 'Tu dirección parece estar fuera de Barcelona. Hay bicis solo funciona dentro de Barcelona'
 
 # =========================================================================================================================================
 
