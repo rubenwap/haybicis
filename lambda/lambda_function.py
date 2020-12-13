@@ -7,17 +7,22 @@
 import logging
 import ask_sdk_core.utils as ask_utils
 
-from ask_sdk_core.skill_builder import SkillBuilder
+from ask_sdk_core.skill_builder import CustomSkillBuilder
+from ask_sdk_core.api_client import DefaultApiClient
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.handler_input import HandlerInput
+from ask_sdk_core.utils import (
+    is_request_type, is_intent_name,
+    get_api_access_token, get_device_id)
 
 from ask_sdk_model import Response
 
 import requests
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
+
 
 def get_bikes(station_id):
     resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
@@ -44,6 +49,8 @@ class LaunchRequestHandler(AbstractRequestHandler):
         )
 
 
+# https://github.com/alexa/alexa-cookbook/blob/master/feature-demos/skill-demo-device-location/lambda/py/lambda_function.py
+
 class HayBicisIntentHandler(AbstractRequestHandler):
     """Handler for HayBicis Intent."""
     def can_handle(self, handler_input):
@@ -51,8 +58,15 @@ class HayBicisIntentHandler(AbstractRequestHandler):
         return ask_utils.is_intent_name("HayBicis")(handler_input)
 
     def handle(self, handler_input):
+
         # type: (HandlerInput) -> Response
-        bikes_available = get_bikes(244)
+
+        service_client_fact = handler_input.service_client_factory
+        device_id = get_device_id(handler_input)
+        device_addr_client = service_client_fact.get_device_address_service()
+        addr = device_addr_client.get_full_address(device_id)
+        logger.info(addr)
+        bikes_available = self.get_bikes(244)
         speak_output = bikes_available
 
         return (
@@ -61,6 +75,17 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 # .ask("add a reprompt if you want to keep the session open for the user to respond")
                 .response
         )
+
+
+    # def get_closest_bicing_id():
+    #     pass
+
+    def get_bikes(self, station_id):
+        resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
+        # station information: https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information
+        # TODO: Remove hardcoded station and pass the argument. Have to find out how to set personal settings in Alexa
+        available_bikes = list(filter(lambda item: item["station_id"] == station_id, resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
+        return f"""Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."""
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -163,7 +188,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 # defined are included below. The order matters - they're processed top to bottom.
 
 
-sb = SkillBuilder()
+sb = CustomSkillBuilder(api_client=DefaultApiClient())
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(HayBicisIntentHandler())
