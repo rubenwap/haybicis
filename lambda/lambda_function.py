@@ -44,7 +44,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return (is_request_type("LaunchRequest")(handler_input)
-                or (is_intent_name("GetAddressIntent")(handler_input)))
+                or (is_intent_name("HayBicis")(handler_input)))
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
