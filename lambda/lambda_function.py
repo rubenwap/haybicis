@@ -79,7 +79,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 
                 
                 response_builder.speak(ADDRESS_AVAILABLE.format(
-                    addr.address_line1, addr.state_or_region, addr.postal_code))
+                    addr.address_line1, addr.city, addr.postal_code))
             return response_builder.response
         except ServiceException as e:
             logger.error("error reported by device location service")
