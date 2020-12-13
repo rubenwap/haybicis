@@ -26,7 +26,7 @@ WELCOME = 'Welcome to the Sample Device Address API Skill!  You can ask for the 
 WHAT_DO_YOU_WANT = 'What do you want to ask?'
 NOTIFY_MISSING_PERMISSIONS = 'Please enable Location permissions in the Amazon Alexa app.'
 NO_ADDRESS = 'It looks like you don\'t have an address set. You can set your address from the companion app.'
-ADDRESS_AVAILABLE = 'Here is your full address: {}, {}, {}'
+ADDRESS_AVAILABLE = 'Here is your full address: {}, {}'
 ERROR = 'There was an error with the skill. Please check the logs.'
 LOCATION_FAILURE = 'There was an error with the Device Address API.'
 GOODBYE = 'Bye! Thanks for using the Sample Device Address API Skill!'
@@ -82,7 +82,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 
                 
                 response_builder.speak(ADDRESS_AVAILABLE.format(
-                    addr.address_line1, addr.city, addr.postal_code))
+                    addr.address_line1, addr.postal_code))
             return response_builder.response
         except ServiceException as e:
             logger.error("error reported by device location service")
