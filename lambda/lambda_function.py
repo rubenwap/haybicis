@@ -74,9 +74,6 @@ class HayBicisIntentHandler(AbstractRequestHandler):
 
             if addr.address_line1 is None and addr.state_or_region is None:
                 response_builder.speak(NO_ADDRESS)
-            elif:
-                addr.city.lower() is not "barcelona":
-                    reponse_builder.speak(OUTSIDE_BARCELONA)
             else:
                 
                 geolocator = Nominatim(user_agent="hay-bicis")
