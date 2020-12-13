@@ -118,6 +118,34 @@ class HayBicisIntentHandler(AbstractRequestHandler):
         return BIKES_AVAILABLE.format(mechanical=available_bikes["mechanical"], ebike=available_bikes["ebike"])
 
 
+class GetAddressErrorHandler(AbstractExceptionHandler):
+    """Catch getAddress error handler, log exception and
+    respond with custom message.
+    """
+    def can_handle(self, handler_input, exception):
+        # type: (HandlerInput, Exception) -> bool
+        return (isinstance(exception, ServiceException))
+
+    def handle(self, handler_input, exception):
+        # type: (HandlerInput, Exception) -> Response
+        logger.info("In GetAddressErrorHandler")
+        logger.error(exception , exc_info=True)
+
+        if (exception.status_code==403):
+            return (handler_input.response_builder
+                .speak(NOTIFY_MISSING_PERMISSIONS)
+                .set_card(
+                    AskForPermissionsConsentCard(permissions=PERMISSIONS))
+                .response
+            )
+
+        # not a permissions issue, so just return general failure
+        return (handler_input.response_builder
+            .speak(LOCATION_FAILURE)
+            .response
+        )
+
+
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
     def can_handle(self, handler_input):
@@ -224,7 +252,10 @@ sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
 sb.add_request_handler(IntentReflectorHandler()) # make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
-
+sb.add_exception_handler(GetAddressErrorHandler())
 sb.add_exception_handler(CatchAllExceptionHandler())
+
+sb.add_global_request_interceptor(RequestLogger())
+sb.add_global_response_interceptor(ResponseLogger())
 
 lambda_handler = sb.lambda_handler()
