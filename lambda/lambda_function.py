@@ -19,6 +19,7 @@ from ask_sdk_model.ui import AskForPermissionsConsentCard
 
 import requests
 from geopy.geocoders import Nominatim
+import geopy.distance
 
 
 # =========================================================================================================================================
@@ -79,27 +80,40 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 address = "{}, Barcelona, {}".format(addr.address_line1, addr.postal_code)
                 logger.info(address)
                 coordinates = geolocator.geocode(address)
-                logger.info((coordinates.latitude, coordinates.longitude))
                 
-                response_builder.speak(f"{coordinates.latitude}, {coordinates.longitude}")
-                # response_builder.speak(ADDRESS_AVAILABLE.format(
-                #     addr.address_line1, addr.postal_code))
-            return response_builder.response
+                closest = get_closest_distance(coordinates.latitude, coordinates.longitude)
+                
+                bikes_available = self.get_bikes(closest["station_id"])
+                speak_output = bikes_available
+            return (
+            handler_input.response_builder
+                .speak(speak_output)
+                # .ask("add a reprompt if you want to keep the session open for the user to respond")
+                .response
+        )
+
         except ServiceException as e:
             logger.error("error reported by device location service")
             raise e
         except Exception as e:
             logger.error(e, exc_info=True)
             return handler_input.response_builder.speak(ERROR)
-            
-   
+           
+          
+    def get_closest_distance(self, lat, lon):
+        stations = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information")
+        stations_w_distance = [{**item, **{'distance_to_user': geopy.distance.distance((lat, lon), (item["lat"], item["lon"]))}}  for item in stations["data"]["stations"]]
+        return sorted(stations_w_distance, key=lambda k: k['distance_to_user'])[0]
         
-    # def get_bikes(self, station_id):
-    #     resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
-    #     # station information: https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information
-    #     # TODO: Remove hardcoded station and pass the argument. Have to find out how to set personal settings in Alexa
-    #     available_bikes = list(filter(lambda item: item["station_id"] == station_id, resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
-    #     return f"""Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."""
+        
+    def get_bikes(self, station):
+        resp = requests.get("https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status")
+        # station information: https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information
+        # TODO: Remove hardcoded station and pass the argument. Have to find out how to set personal settings in Alexa
+        available_bikes = list(filter(lambda item: item["station_id"] == station["station_id"], resp.json()["data"]["stations"]))[0]["num_bikes_available_types"]
+        return f"""En la estación {station["station_id"]}Hay {available_bikes["mechanical"]} bicis mecánicas y {available_bikes["ebike"]} eléctricas."""
+
+
 
 class HayBicisErrorHandler(AbstractExceptionHandler):
     """Catch getAddress error handler, log exception and
