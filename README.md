@@ -6,10 +6,15 @@ Alexa Skill to find out available Bicing bikes in your favorite station in Barce
 Alexa, pregunta a la estación de Bicing si hay bicis
 ```
 
+Or, more succintly
+
+```
+Alexa, mira la estación de Bicing
+```
+
 TODO:
 
-* Save custom settings to the station can be configured (right now it only checks where I live!)
-* Once location is saved, suggest nearby stations if the chosen one is empty or low
-* English translation of the intents
+* Suggest nearby locations when closest is empty
+* More languages
 
 
