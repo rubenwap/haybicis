@@ -91,6 +91,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
                 )
 
         except ServiceException as e:
+            logger.error(e, exc_info=True)
             logger.error("error reported by device location service")
             raise e
         except Exception as e:
@@ -111,7 +112,7 @@ class HayBicisIntentHandler(AbstractRequestHandler):
 
 
 class HayBicisErrorHandler(AbstractExceptionHandler):
-    """Catch getAddress error handler, log exception and
+    """Catch HayBicis error handler, log exception and
     respond with custom message.
     """
     def can_handle(self, handler_input, exception):
@@ -120,7 +121,7 @@ class HayBicisErrorHandler(AbstractExceptionHandler):
 
     def handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> Response
-        logger.info("In GetAddressErrorHandler")
+        logger.info("In HayBicisErrorHandler")
         logger.error(exception , exc_info=True)
 
         if (exception.status_code==403):
