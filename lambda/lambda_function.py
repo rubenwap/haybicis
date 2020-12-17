@@ -65,7 +65,8 @@ class HayBicisIntentHandler(AbstractRequestHandler):
             return response_builder.response
 
         try:
-            device_id = get_device_id(handler_input)
+            #device_id = get_device_id(handler_input)
+            device_id = req_envelope.context.system.device.device_id
             device_addr_client = service_client_fact.get_device_address_service()
             addr = device_addr_client.get_full_address(device_id)
             logger.info(addr)
