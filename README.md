@@ -5,13 +5,13 @@
 Alexa Skill to find out available Bicing bikes in your favorite station in Barcelona. 
 
 ```
-Alexa, pregunta a la estación de Bicing si hay bicis
+Alexa, pregunta a la estación de bicis si hay bicis
 ```
 
 Or, more succintly
 
 ```
-Alexa, mira la estación de Bicing
+Alexa, mira la estación de bicis
 ```
 
 TODO:
